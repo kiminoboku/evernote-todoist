@@ -39,6 +39,7 @@ class EvernoteNotificationHandlerTest {
     TodoistService todoistServiceMock;
     @Mock
     EvernoteService evernoteServiceMock;
+
     @Mock
     APIGatewayV2HTTPEvent inputMock;
     @Mock
