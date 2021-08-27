@@ -11,8 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kiminoboku.evernote.EvernoteNotification;
 import pl.kiminoboku.evernote.EvernoteNotificationExtractor;
+import pl.kiminoboku.evernote.EvernoteService;
 import pl.kiminoboku.exception.ThrowableLogger;
+import pl.kiminoboku.todoist.TodoistCreateTaskRequest;
+import pl.kiminoboku.todoist.TodoistNewTaskResult;
 import pl.kiminoboku.todoist.TodoistRequestCreator;
+import pl.kiminoboku.todoist.TodoistService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -30,6 +34,10 @@ class EvernoteNotificationHandlerTest {
     EvernoteNotificationExtractor evernoteNotificationExtractorMock;
     @Mock
     TodoistRequestCreator todoistRequestCreatorMock;
+    @Mock
+    TodoistService todoistServiceMock;
+    @Mock
+    EvernoteService evernoteServiceMock;
     @Mock
     APIGatewayV2HTTPEvent inputMock;
     @Mock
@@ -56,12 +64,17 @@ class EvernoteNotificationHandlerTest {
     }
 
     @Test
-    void shouldCreateTodoistRequestsBasedOnEvernoteInput() {
+    void shouldProcessRequest() {
         EvernoteNotification evernoteNotificationMock = mock(EvernoteNotification.class);
         when(evernoteNotificationExtractorMock.getFrom(inputMock)).thenReturn(Option.of(evernoteNotificationMock));
+        TodoistCreateTaskRequest createTaskRequestMock = mock(TodoistCreateTaskRequest.class);
+        when(todoistRequestCreatorMock.requestFor(evernoteNotificationMock)).thenReturn(Option.of(createTaskRequestMock));
+        TodoistNewTaskResult createTaskResultMock = mock(TodoistNewTaskResult.class);
+        when(todoistServiceMock.createTask(createTaskRequestMock)).thenReturn(Option.of(createTaskResultMock));
+        when(evernoteServiceMock.markNoteCloned(createTaskResultMock)).thenReturn(true);
 
         systemUnderTest.handleRequest(inputMock, lambdaContextMock);
 
-        verify(todoistRequestCreatorMock).requestFor(evernoteNotificationMock);
+        verify(evernoteServiceMock).markNoteCloned(createTaskResultMock);
     }
 }

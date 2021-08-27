@@ -10,7 +10,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.kiminoboku.evernote.EvernoteNotification;
 import pl.kiminoboku.evernote.EvernoteNotificationExtractor;
+import pl.kiminoboku.evernote.EvernoteService;
 import pl.kiminoboku.exception.ThrowableLogger;
+import pl.kiminoboku.todoist.TodoistCreateTaskRequest;
+import pl.kiminoboku.todoist.TodoistNewTaskResult;
 import pl.kiminoboku.todoist.TodoistRequestCreator;
 import pl.kiminoboku.todoist.TodoistService;
 
@@ -23,30 +26,58 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
     private final EvernoteNotificationExtractor notificationExtractor;
     private final TodoistRequestCreator todoistRequestCreator;
     private final TodoistService todoistService;
+    private final EvernoteService evernoteService;
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
         Try.run(() -> {
-            //get valid inputs option
-            Option<EvernoteNotification> notificationOption = getNotificationOption(input);
-            if(notificationOption.isDefined()) {
-                EvernoteNotification notification = notificationOption.get();
-                //determine if todoist needs to be involved
-                todoistRequestCreator.requestFor(notification);
-                //run todoist
+            Option<EvernoteNotification> notificationOption = createNotificationOptionFrom(input);
+            processIfDefined(notificationOption);
+        }).onFailure(this::logFailure);
 
-                //update notes with "cloned" tag
+        return okResponse();
+    }
 
-            }
-        }).onFailure(throwableLogger::log);
+    private Option<EvernoteNotification> createNotificationOptionFrom(APIGatewayV2HTTPEvent input) {
+        return notificationExtractor.getFrom(input);
+    }
 
-        //return 200
+    private void processIfDefined(Option<EvernoteNotification> notificationOption) {
+        if (notificationOption.isDefined()) {
+            EvernoteNotification notification = notificationOption.get();
+            createTaskAndMarkNoteClonedFor(notification);
+        }
+    }
+
+    private void logFailure(Throwable throwable) {
+        throwableLogger.log(throwable);
+    }
+
+    private APIGatewayV2HTTPResponse okResponse() {
         return APIGatewayV2HTTPResponse.builder()
                 .withStatusCode(HTTP_OK_200)
                 .build();
     }
 
-    private Option<EvernoteNotification> getNotificationOption(APIGatewayV2HTTPEvent input) {
-        return notificationExtractor.getFrom(input);
+    private void createTaskAndMarkNoteClonedFor(EvernoteNotification notification) {
+        Option<TodoistCreateTaskRequest> createTaskRequestOption = createNewTaskRequestFor(notification);
+        if (createTaskRequestOption.isDefined()) {
+            Option<TodoistNewTaskResult> newTaskResultOption = createTask(createTaskRequestOption.get());
+            markNoteClonedIfNewTaskDefined(newTaskResultOption);
+        }
+    }
+
+    private Option<TodoistCreateTaskRequest> createNewTaskRequestFor(EvernoteNotification notification) {
+        return todoistRequestCreator.requestFor(notification);
+    }
+
+    private Option<TodoistNewTaskResult> createTask(TodoistCreateTaskRequest createTaskRequestOption) {
+        return todoistService.createTask(createTaskRequestOption);
+    }
+
+    private void markNoteClonedIfNewTaskDefined(Option<TodoistNewTaskResult> newTaskResultOption) {
+        if(newTaskResultOption.isDefined()) {
+            evernoteService.markNoteCloned(newTaskResultOption.get());
+        }
     }
 }
