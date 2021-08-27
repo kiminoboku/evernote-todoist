@@ -12,14 +12,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kiminoboku.evernote.EvernoteNotification;
 import pl.kiminoboku.evernote.EvernoteNotificationExtractor;
 import pl.kiminoboku.evernote.EvernoteService;
-import pl.kiminoboku.exception.ThrowableLogger;
 import pl.kiminoboku.todoist.TodoistCreateTaskRequest;
 import pl.kiminoboku.todoist.TodoistNewTaskResult;
 import pl.kiminoboku.todoist.TodoistRequestCreator;
 import pl.kiminoboku.todoist.TodoistService;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.in;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,8 +28,6 @@ class EvernoteNotificationHandlerTest {
     EvernoteNotificationHandler systemUnderTest;
 
     @Mock
-    ThrowableLogger throwableLoggerMock;
-    @Mock
     EvernoteNotificationExtractor evernoteNotificationExtractorMock;
     @Mock
     TodoistRequestCreator todoistRequestCreatorMock;
@@ -39,6 +35,8 @@ class EvernoteNotificationHandlerTest {
     TodoistService todoistServiceMock;
     @Mock
     EvernoteService evernoteServiceMock;
+    @Mock
+    Logger loggerMock;
 
     @Mock
     APIGatewayV2HTTPEvent inputMock;
@@ -51,7 +49,7 @@ class EvernoteNotificationHandlerTest {
 
         APIGatewayV2HTTPResponse result = systemUnderTest.handleRequest(inputMock, lambdaContextMock);
 
-        verify(throwableLoggerMock).log(any());
+        verify(loggerMock).log(any(Throwable.class));
         assertThat(result).isNotNull();
         assertThat(result.getStatusCode()).isEqualTo(HTTP_OK_200);
     }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import pl.kiminoboku.evernote.EvernoteNotification;
 import pl.kiminoboku.evernote.EvernoteNotificationExtractor;
 import pl.kiminoboku.evernote.EvernoteService;
-import pl.kiminoboku.exception.ThrowableLogger;
 import pl.kiminoboku.todoist.TodoistCreateTaskRequest;
 import pl.kiminoboku.todoist.TodoistNewTaskResult;
 import pl.kiminoboku.todoist.TodoistRequestCreator;
@@ -22,11 +21,11 @@ import pl.kiminoboku.todoist.TodoistService;
 public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
     private static final int HTTP_OK_200 = 200;
 
-    private final ThrowableLogger throwableLogger;
     private final EvernoteNotificationExtractor notificationExtractor;
     private final TodoistRequestCreator todoistRequestCreator;
     private final TodoistService todoistService;
     private final EvernoteService evernoteService;
+    private final Logger logger;
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent input, Context context) {
@@ -39,7 +38,9 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
     }
 
     private Option<EvernoteNotification> createNotificationOptionFrom(APIGatewayV2HTTPEvent input) {
-        return notificationExtractor.getFrom(input);
+        Option<EvernoteNotification> result = notificationExtractor.getFrom(input);
+        result.forEach(n -> logger.log("EvernoteNotification: {0}", n));
+        return result;
     }
 
     private void processIfDefined(Option<EvernoteNotification> notificationOption) {
@@ -50,7 +51,7 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
     }
 
     private void logFailure(Throwable throwable) {
-        throwableLogger.log(throwable);
+        logger.log(throwable);
     }
 
     private APIGatewayV2HTTPResponse okResponse() {
