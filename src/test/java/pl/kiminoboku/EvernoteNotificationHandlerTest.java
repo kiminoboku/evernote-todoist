@@ -19,6 +19,7 @@ import pl.kiminoboku.todoist.TodoistRequestCreator;
 import pl.kiminoboku.todoist.TodoistService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +53,39 @@ class EvernoteNotificationHandlerTest {
         verify(throwableLoggerMock).log(any());
         assertThat(result).isNotNull();
         assertThat(result.getStatusCode()).isEqualTo(HTTP_OK_200);
+    }
+
+    @Test
+    void shouldNotProceedIfNotificationDataIsMissing() {
+        when(evernoteNotificationExtractorMock.getFrom(any())).thenReturn(Option.none());
+
+        systemUnderTest.handleRequest(inputMock, lambdaContextMock);
+
+        verifyNoInteractions(todoistRequestCreatorMock);
+    }
+
+    @Test
+    void shouldNotProceedWhenTodoistRequestIsMissing() {
+        EvernoteNotification evernoteNotificationMock = mock(EvernoteNotification.class);
+        when(evernoteNotificationExtractorMock.getFrom(inputMock)).thenReturn(Option.of(evernoteNotificationMock));
+        when(todoistRequestCreatorMock.requestFor(evernoteNotificationMock)).thenReturn(Option.none());
+
+        systemUnderTest.handleRequest(inputMock, lambdaContextMock);
+
+        verifyNoInteractions(todoistServiceMock);
+    }
+
+    @Test
+    void shouldNotProceedWhenTodoistTaskIsNotCreated() {
+        EvernoteNotification evernoteNotificationMock = mock(EvernoteNotification.class);
+        when(evernoteNotificationExtractorMock.getFrom(inputMock)).thenReturn(Option.of(evernoteNotificationMock));
+        TodoistCreateTaskRequest createTaskRequestMock = mock(TodoistCreateTaskRequest.class);
+        when(todoistRequestCreatorMock.requestFor(evernoteNotificationMock)).thenReturn(Option.of(createTaskRequestMock));
+        when(todoistServiceMock.createTask(createTaskRequestMock)).thenReturn(Option.none());
+
+        systemUnderTest.handleRequest(inputMock, lambdaContextMock);
+
+        verifyNoInteractions(evernoteServiceMock);
     }
 
     @Test
