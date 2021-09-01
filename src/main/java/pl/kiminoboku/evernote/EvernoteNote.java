@@ -1,5 +1,6 @@
 package pl.kiminoboku.evernote;
 
+import io.vavr.control.Option;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -17,8 +18,6 @@ public class EvernoteNote {
     @NonNull
     UUID notebookGuid;
 
-    String title;
-
     @NonNull
     String appUrl;
 
@@ -27,4 +26,10 @@ public class EvernoteNote {
 
     @Singular
     List<String> tagNames;
+
+    String title;
+
+    public Option<String> getTitle() {
+        return Option.of(title);
+    }
 }
