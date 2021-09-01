@@ -2,7 +2,6 @@ package pl.kiminoboku.evernote;
 
 import io.vavr.control.Option;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.Value;
 

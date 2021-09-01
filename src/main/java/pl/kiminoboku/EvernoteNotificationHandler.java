@@ -77,7 +77,7 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
     }
 
     private void markNoteClonedIfNewTaskDefined(Option<TodoistNewTaskResult> newTaskResultOption) {
-        if(newTaskResultOption.isDefined()) {
+        if (newTaskResultOption.isDefined()) {
             evernoteService.markNoteCloned(newTaskResultOption.get());
         }
     }
