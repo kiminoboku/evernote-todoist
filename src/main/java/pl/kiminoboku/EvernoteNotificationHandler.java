@@ -64,7 +64,7 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
         Option<TodoistCreateTaskRequest> createTaskRequestOption = createNewTaskRequestFor(notification);
         if (createTaskRequestOption.isDefined()) {
             Option<TodoistNewTaskResult> newTaskResultOption = createTask(createTaskRequestOption.get());
-            markNoteClonedIfNewTaskDefined(newTaskResultOption);
+            markNoteClonedIfNewTaskDefined(notification, newTaskResultOption);
         }
     }
 
@@ -76,9 +76,9 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
         return todoistService.createTask(createTaskRequestOption);
     }
 
-    private void markNoteClonedIfNewTaskDefined(Option<TodoistNewTaskResult> newTaskResultOption) {
+    private void markNoteClonedIfNewTaskDefined(EvernoteNotification evernoteNotification, Option<TodoistNewTaskResult> newTaskResultOption) {
         if (newTaskResultOption.isDefined()) {
-            evernoteService.markNoteCloned(newTaskResultOption.get());
+            evernoteService.markNoteCloned(evernoteNotification.getNoteGuid().get(), newTaskResultOption.get());
         }
     }
 }

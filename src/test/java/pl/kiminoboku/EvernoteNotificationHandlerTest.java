@@ -12,10 +12,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kiminoboku.evernote.EvernoteNotification;
 import pl.kiminoboku.evernote.EvernoteNotificationExtractor;
 import pl.kiminoboku.evernote.EvernoteService;
-import pl.kiminoboku.todoist.TodoistCreateTaskRequest;
-import pl.kiminoboku.todoist.TodoistNewTaskResult;
-import pl.kiminoboku.todoist.TodoistRequestCreator;
-import pl.kiminoboku.todoist.TodoistService;
+import pl.kiminoboku.evernote.EvernoteTestObjectsFactory;
+import pl.kiminoboku.todoist.*;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -98,16 +98,17 @@ class EvernoteNotificationHandlerTest {
 
     @Test
     void shouldProcessRequest() {
-        EvernoteNotification evernoteNotificationMock = mock(EvernoteNotification.class);
-        when(evernoteNotificationExtractorMock.getFrom(inputMock)).thenReturn(Option.of(evernoteNotificationMock));
-        TodoistCreateTaskRequest createTaskRequestMock = mock(TodoistCreateTaskRequest.class);
-        when(todoistRequestCreatorMock.requestFor(evernoteNotificationMock)).thenReturn(Option.of(createTaskRequestMock));
-        TodoistNewTaskResult createTaskResultMock = mock(TodoistNewTaskResult.class);
-        when(todoistServiceMock.createTask(createTaskRequestMock)).thenReturn(Option.of(createTaskResultMock));
-        when(evernoteServiceMock.markNoteCloned(createTaskResultMock)).thenReturn(true);
+        EvernoteNotification notification = EvernoteTestObjectsFactory.createNotification();
+        TodoistCreateTaskRequest createTaskRequest = TodoistTestObjectsFactory.createNewTaskRequest();
+        TodoistNewTaskResult createTaskResult = TodoistTestObjectsFactory.createNewTaskResult();
+        UUID noteGuid = EvernoteTestObjectsFactory.NOTE_GUID;
+        when(evernoteNotificationExtractorMock.getFrom(inputMock)).thenReturn(Option.of(notification));
+        when(todoistRequestCreatorMock.requestFor(notification)).thenReturn(Option.of(createTaskRequest));
+        when(todoistServiceMock.createTask(createTaskRequest)).thenReturn(Option.of(createTaskResult));
+        when(evernoteServiceMock.markNoteCloned(noteGuid, createTaskResult)).thenReturn(true);
 
         systemUnderTest.handleRequest(inputMock, lambdaContextMock);
 
-        verify(evernoteServiceMock).markNoteCloned(createTaskResultMock);
+        verify(evernoteServiceMock).markNoteCloned(noteGuid, createTaskResult);
     }
 }

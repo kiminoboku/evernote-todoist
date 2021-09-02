@@ -1,37 +1,60 @@
 package pl.kiminoboku.evernote;
 
-import com.evernote.auth.EvernoteAuth;
-import com.evernote.clients.ClientFactory;
 import com.evernote.clients.NoteStoreClient;
 import com.evernote.edam.error.EDAMNotFoundException;
 import com.evernote.edam.error.EDAMSystemException;
 import com.evernote.edam.error.EDAMUserException;
 import com.evernote.edam.type.Note;
 import com.evernote.thrift.TException;
-import io.vavr.API;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import pl.kiminoboku.Logger;
 import pl.kiminoboku.todoist.TodoistNewTaskResult;
 
 import java.util.UUID;
 
 @Component
+@AllArgsConstructor
 public class EvernoteService {
+
+    private static final boolean NO_CONTENT = false;
+    private static final boolean NO_RESOURCE_DATA = false;
+    private static final boolean NO_RESOURCE_RECOGNITION = false;
+    private static final boolean NO_RESOURCE_ALTERNATE_DATA = false;
+    public static final String CLONED_TAG_NAME = "cloned";
+
+    NoteStoreClient noteStoreClient;
+    EvernoteNoteAdapterConverter converter;
+    Logger logger;
+
     public Option<EvernoteNote> getNote(UUID noteGuid) {
-        return API.TODO();
+        return Try.of(() -> getNote(noteGuid.toString()))
+                .map(converter::from)
+                .onFailure(logger::log)
+                .toOption();
     }
 
-    public boolean markNoteCloned(TodoistNewTaskResult createTaskResult) {
-        return API.TODO();
+    public boolean markNoteCloned(UUID noteGuid, TodoistNewTaskResult createTaskResult) {
+        return Try.of(() -> getNote(noteGuid.toString()))
+                .andThen(Note::unsetContent)
+                .andThen(Note::unsetResources)
+                .andThen(this::setNoteCloned)
+                .mapTry(this::updateNote)
+                .onFailure(logger::log)
+                .isSuccess();
     }
 
-    public static void main(String[] args) throws TException, EDAMSystemException, EDAMUserException, EDAMNotFoundException {
-        EvernoteAuth auth = new EvernoteAuth(com.evernote.auth.EvernoteService.SANDBOX, "S=s1:U=96758:E=182d7222bc9:C=17b7f70ff48:P=1cd:A=en-devtoken:V=2:H=589e71566dafcac4f23de6704952196a");
-        ClientFactory clientFactory = new ClientFactory(auth);
-        NoteStoreClient noteStoreClient = clientFactory.createNoteStoreClient();
-        Note note = noteStoreClient.getNote("b79b2a63-4924-4e2c-9554-bfdd1a039668", false, false, false, false);
-        System.out.println(note.getTitle());
-        System.out.println(noteStoreClient.getNoteTagNames(note.getGuid()));
-        System.out.println(note.getNotebookGuid());
+    private Note getNote(String guid) throws EDAMUserException, EDAMSystemException, EDAMNotFoundException, TException {
+        return noteStoreClient.getNote(guid, NO_CONTENT, NO_RESOURCE_DATA, NO_RESOURCE_RECOGNITION, NO_RESOURCE_ALTERNATE_DATA);
+    }
+
+    private void setNoteCloned(Note note) {
+        note.addToTagNames(CLONED_TAG_NAME);
+    }
+
+    private Note updateNote(Note note) throws EDAMUserException, EDAMSystemException, EDAMNotFoundException, TException {
+        return noteStoreClient.updateNote(note);
     }
 }

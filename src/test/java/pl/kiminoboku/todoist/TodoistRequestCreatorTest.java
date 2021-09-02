@@ -8,7 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kiminoboku.NoteCloneConditions;
 import pl.kiminoboku.TodoistProjectMappings;
-import pl.kiminoboku.evernote.*;
+import pl.kiminoboku.evernote.EvernoteNote;
+import pl.kiminoboku.evernote.EvernoteNotification;
+import pl.kiminoboku.evernote.EvernoteService;
+import pl.kiminoboku.evernote.EvernoteTestObjectsFactory;
 
 import java.util.UUID;
 
@@ -38,7 +41,7 @@ class TodoistRequestCreatorTest {
         UUID noteGuid = notification.getNoteGuid().get();
         EvernoteNote evernoteNote = EvernoteTestObjectsFactory.createNote();
         TodoistProjectId expectedMappedProjectId = TodoistProjectId.of(ANY_NUMBER);
-        TodoistCreateTaskRequest expectedCreateTaskRequest = TodoistTestObjectsFactory.create();
+        TodoistCreateTaskRequest expectedCreateTaskRequest = TodoistTestObjectsFactory.createNewTaskRequest();
         when(evernoteServiceMock.getNote(noteGuid)).thenReturn(Option.of(evernoteNote));
         when(noteCloneConditionsMock.shouldBeCloned(evernoteNote, notification)).thenReturn(true);
         when(todoistProjectMappingsMock.getTargetProjectIdFor(evernoteNote)).thenReturn(Option.of(expectedMappedProjectId));
