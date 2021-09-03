@@ -18,12 +18,6 @@ public class EvernoteNote {
     @NonNull
     UUID notebookGuid;
 
-    @NonNull
-    String appUrl;
-
-    @NonNull
-    String webUrl;
-
     @Singular
     List<String> tagNames;
 

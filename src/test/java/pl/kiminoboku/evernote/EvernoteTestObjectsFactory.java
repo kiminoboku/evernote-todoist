@@ -1,5 +1,6 @@
 package pl.kiminoboku.evernote;
 
+import com.evernote.edam.type.Note;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -26,14 +27,20 @@ public class EvernoteTestObjectsFactory {
                 .build();
     }
 
-    public static EvernoteNote createNote() {
+    public static EvernoteNote createEvernoteNote() {
         return EvernoteNote.builder()
                 .noteGuid(NOTE_GUID)
                 .notebookGuid(NOTEBOOK_GUID)
                 .title(NOTE_TITLE)
-                .appUrl(NOTE_APP_URL)
-                .webUrl(NOTE_WEB_URL)
                 .tagNames(Collections.emptyList())
                 .build();
+    }
+
+    public static Note createNote() {
+        Note note = new Note();
+        note.setGuid(NOTE_GUID.toString());
+        note.setTitle(NOTE_TITLE);
+        note.setNotebookGuid(NOTEBOOK_GUID.toString());
+        return note;
     }
 }

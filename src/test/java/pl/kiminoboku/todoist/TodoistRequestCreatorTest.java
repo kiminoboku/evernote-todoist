@@ -39,7 +39,7 @@ class TodoistRequestCreatorTest {
     void shouldCreateTaskRequest() {
         EvernoteNotification notification = EvernoteTestObjectsFactory.createNotification();
         UUID noteGuid = notification.getNoteGuid().get();
-        EvernoteNote evernoteNote = EvernoteTestObjectsFactory.createNote();
+        EvernoteNote evernoteNote = EvernoteTestObjectsFactory.createEvernoteNote();
         TodoistProjectId expectedMappedProjectId = TodoistProjectId.of(ANY_NUMBER);
         TodoistCreateTaskRequest expectedCreateTaskRequest = TodoistTestObjectsFactory.createNewTaskRequest();
         when(evernoteServiceMock.getNote(noteGuid)).thenReturn(Option.of(evernoteNote));
@@ -77,7 +77,7 @@ class TodoistRequestCreatorTest {
     @Test
     void shouldReturnNoneWhenNoteShoulNotBeCloned() {
         EvernoteNotification notification = EvernoteTestObjectsFactory.createNotification();
-        EvernoteNote note = EvernoteTestObjectsFactory.createNote();
+        EvernoteNote note = EvernoteTestObjectsFactory.createEvernoteNote();
         when(evernoteServiceMock.getNote(any(UUID.class))).thenReturn(Option.of(note));
         when(noteCloneConditionsMock.shouldBeCloned(note, notification)).thenReturn(false);
 
@@ -89,7 +89,7 @@ class TodoistRequestCreatorTest {
     @Test
     void shouldReturnNoneWhenProjectMappingIsMissing() {
         EvernoteNotification notification = EvernoteTestObjectsFactory.createNotification();
-        EvernoteNote note = EvernoteTestObjectsFactory.createNote();
+        EvernoteNote note = EvernoteTestObjectsFactory.createEvernoteNote();
         when(evernoteServiceMock.getNote(any(UUID.class))).thenReturn(Option.of(note));
         when(noteCloneConditionsMock.shouldBeCloned(note, notification)).thenReturn(true);
         when(todoistProjectMappingsMock.getTargetProjectIdFor(note)).thenReturn(Option.none());

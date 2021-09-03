@@ -72,8 +72,8 @@ public class EvernoteNotificationHandler implements RequestHandler<APIGatewayV2H
         return todoistRequestCreator.requestFor(notification);
     }
 
-    private Option<TodoistNewTaskResult> createTask(TodoistCreateTaskRequest createTaskRequestOption) {
-        return todoistService.createTask(createTaskRequestOption);
+    private Option<TodoistNewTaskResult> createTask(TodoistCreateTaskRequest createTaskRequest) {
+        return todoistService.createTask(createTaskRequest);
     }
 
     private void markNoteClonedIfNewTaskDefined(EvernoteNotification evernoteNotification, Option<TodoistNewTaskResult> newTaskResultOption) {

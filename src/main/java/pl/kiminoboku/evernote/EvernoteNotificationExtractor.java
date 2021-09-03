@@ -65,10 +65,10 @@ public class EvernoteNotificationExtractor {
         return Option.of(notification(userIdOption.get(), noteGuidOption.getOrNull(), notebookGuidOption.get(), reasonOption.get()));
     }
 
-    private EvernoteNotification notification(String userId, UUID orNull, UUID notebookGuid, NotificationReason notificationReason) {
+    private EvernoteNotification notification(String userId, UUID noteGuid, UUID notebookGuid, NotificationReason notificationReason) {
         return EvernoteNotification.builder()
                 .userId(userId)
-                .noteGuid(orNull)
+                .noteGuid(noteGuid)
                 .notebookGuid(notebookGuid)
                 .notificationReason(notificationReason)
                 .build();
