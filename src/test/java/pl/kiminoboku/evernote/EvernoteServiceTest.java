@@ -37,17 +37,17 @@ class EvernoteServiceTest {
 
     @Test
     void shouldReturnNote() throws TException, EDAMNotFoundException, EDAMSystemException, EDAMUserException {
-        String noteGuid = "a76b8e59-3d60-4acb-85d5-c1fca9e92019";
-        Note noteMock = mock(Note.class);
-        EvernoteNote evernoteNoteMock = mock(EvernoteNote.class);
+        Note note = EvernoteTestObjectsFactory.createNote();
+        String noteGuid = note.getGuid();
+        EvernoteNote evernoteNote = EvernoteTestObjectsFactory.createEvernoteNote();
         when(noteStoreClientMock.getNote(noteGuid, false, false, false, false))
-                .thenReturn(noteMock);
-        when(evernoteNoteAdapterMock.from(noteMock)).thenReturn(evernoteNoteMock);
+                .thenReturn(note);
+        when(evernoteNoteAdapterMock.from(note)).thenReturn(evernoteNote);
 
         Option<EvernoteNote> result = systemUnderTest.getNote(UUID.fromString(noteGuid));
 
         assertThat(result).isDefined();
-        assertThat(result.get()).isEqualTo(evernoteNoteMock);
+        assertThat(result.get()).isEqualTo(evernoteNote);
     }
 
     @Test

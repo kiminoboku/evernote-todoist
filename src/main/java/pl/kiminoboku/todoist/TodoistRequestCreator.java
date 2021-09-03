@@ -18,7 +18,7 @@ public class TodoistRequestCreator {
     EvernoteService evernoteService;
     NoteCloneConditions noteCloneConditions;
     TodoistProjectMappings todoistProjectMappings;
-    EvernoteToTodoistRequestConverter requestConverter;
+    TodoistCreateTaskRequestBuilder requestBuilder;
 
     public Option<TodoistCreateTaskRequest> requestFor(EvernoteNotification evernoteNotification) {
         Option<UUID> noteGuidOption = evernoteNotification.getNoteGuid();
@@ -48,12 +48,12 @@ public class TodoistRequestCreator {
     private Option<TodoistCreateTaskRequest> createIfTargetProjectIsDefinedFor(EvernoteNote note) {
         Option<TodoistProjectId> targetProjectIdOption = todoistProjectMappings.getTargetProjectIdFor(note);
         if (targetProjectIdOption.isDefined()) {
-            return Option.of(convert(note, targetProjectIdOption.get()));
+            return Option.of(buildRequestFrom(note, targetProjectIdOption.get()));
         }
         return Option.none();
     }
 
-    private TodoistCreateTaskRequest convert(EvernoteNote note, TodoistProjectId targetProjectId) {
-        return requestConverter.convert(note, targetProjectId);
+    private TodoistCreateTaskRequest buildRequestFrom(EvernoteNote note, TodoistProjectId targetProjectId) {
+        return requestBuilder.buildFrom(note, targetProjectId);
     }
 }

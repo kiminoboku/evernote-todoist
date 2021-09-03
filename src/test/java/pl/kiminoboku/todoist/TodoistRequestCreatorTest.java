@@ -33,7 +33,7 @@ class TodoistRequestCreatorTest {
     @Mock
     TodoistProjectMappings todoistProjectMappingsMock;
     @Mock
-    EvernoteToTodoistRequestConverter evernoteToTodoistRequestConverterMock;
+    TodoistCreateTaskRequestBuilder todoistCreateTaskRequestBuilderMock;
 
     @Test
     void shouldCreateTaskRequest() {
@@ -45,7 +45,7 @@ class TodoistRequestCreatorTest {
         when(evernoteServiceMock.getNote(noteGuid)).thenReturn(Option.of(evernoteNote));
         when(noteCloneConditionsMock.shouldBeCloned(evernoteNote, notification)).thenReturn(true);
         when(todoistProjectMappingsMock.getTargetProjectIdFor(evernoteNote)).thenReturn(Option.of(expectedMappedProjectId));
-        when(evernoteToTodoistRequestConverterMock.convert(evernoteNote, expectedMappedProjectId)).thenReturn(expectedCreateTaskRequest);
+        when(todoistCreateTaskRequestBuilderMock.buildFrom(evernoteNote, expectedMappedProjectId)).thenReturn(expectedCreateTaskRequest);
 
         Option<TodoistCreateTaskRequest> result = systemUnderTest.requestFor(notification);
 

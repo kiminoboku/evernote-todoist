@@ -15,19 +15,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EvernoteToTodoistRequestConverterTest {
+class TodoistCreateTaskRequestBuilderTest {
     private static final String WEB_API_URL_PREFIX = "ANY_WEB_API_URL_PREFIX";
     private static final String USER_ID = "ANY_USER_ID";
     private static final String SHARD_ID = "ANY_SHARD_ID";
 
     @InjectMocks
-    EvernoteToTodoistRequestConverter systemUnderTest;
+    TodoistCreateTaskRequestBuilder systemUnderTest;
 
     @Mock
     EvernoteUserDetails evernoteUserDetails;
 
     @Test
-    void shouldConvert() {
+    void shouldBuildRequest() {
         EvernoteNote evernoteNote = EvernoteTestObjectsFactory.createEvernoteNote();
         when(evernoteUserDetails.getWebApiUrlPrefix()).thenReturn(WEB_API_URL_PREFIX);
         when(evernoteUserDetails.getUserId()).thenReturn(USER_ID);
@@ -36,7 +36,7 @@ class EvernoteToTodoistRequestConverterTest {
         UUID noteGuid = evernoteNote.getNoteGuid();
         String expectedDescription = "Evernote: [Browser](" + WEB_API_URL_PREFIX + "/nl/" + USER_ID + "/" + noteGuid + ") | [App](evernote:///view/" + USER_ID + "/" + SHARD_ID + "/" + noteGuid + "/" + noteGuid + ")";
 
-        TodoistCreateTaskRequest result = systemUnderTest.convert(evernoteNote, TodoistProjectId.of(projectId));
+        TodoistCreateTaskRequest result = systemUnderTest.buildFrom(evernoteNote, TodoistProjectId.of(projectId));
 
         assertThat(result).isEqualTo(TodoistCreateTaskRequest.builder()
                 .projectId(projectId)

@@ -9,11 +9,11 @@ import java.util.UUID;
 
 @Component
 @AllArgsConstructor
-public class EvernoteToTodoistRequestConverter {
+public class TodoistCreateTaskRequestBuilder {
 
     EvernoteUserDetails evernoteUserDetails;
 
-    public TodoistCreateTaskRequest convert(EvernoteNote evernoteNote, TodoistProjectId targetProjectId) {
+    public TodoistCreateTaskRequest buildFrom(EvernoteNote evernoteNote, TodoistProjectId targetProjectId) {
         UUID noteGuid = evernoteNote.getNoteGuid();
         return TodoistCreateTaskRequest.builder()
                 .projectId(targetProjectId.getProjectId())
