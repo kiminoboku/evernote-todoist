@@ -4,7 +4,7 @@ import com.evernote.edam.type.Note;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,24 +15,26 @@ public class EvernoteTestObjectsFactory {
     public static final UUID NOTE_GUID = UUID.randomUUID();
     public static final UUID NOTEBOOK_GUID = UUID.randomUUID();
     public static final String NOTE_TITLE = "ANY_TITLE";
-    public static final String NOTE_APP_URL = "ANY_APP_URL";
-    public static final String NOTE_WEB_URL = "ANY_WEB_URL";
 
     public static EvernoteNotification createNotification() {
+        return createNotification(NotificationReason.NOTE_CREATED);
+    }
+
+    public static EvernoteNotification createNotification(NotificationReason notificationReason) {
         return EvernoteNotification.builder()
                 .userId(USER_ID)
                 .noteGuid(NOTE_GUID)
                 .notebookGuid(NOTEBOOK_GUID)
-                .notificationReason(NotificationReason.NOTE_CREATED)
+                .notificationReason(notificationReason)
                 .build();
     }
 
-    public static EvernoteNote createEvernoteNote() {
+    public static EvernoteNote createEvernoteNote(String... tagNames) {
         return EvernoteNote.builder()
                 .noteGuid(NOTE_GUID)
                 .notebookGuid(NOTEBOOK_GUID)
                 .title(NOTE_TITLE)
-                .tagNames(Collections.emptyList())
+                .tagNames(Arrays.asList(tagNames))
                 .build();
     }
 
