@@ -8,7 +8,7 @@ import org.assertj.core.api.AbstractAssert;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Assertions {
-    public static  <VALUE> OptionAssert<VALUE> assertThat(Option<VALUE> option) {
+    public static <VALUE> OptionAssert<VALUE> assertThat(Option<VALUE> option) {
         return new OptionAssert<>(option);
     }
 
@@ -27,7 +27,7 @@ public class Assertions {
 
         public OptionAssert<VALUE> isEmpty() {
             isNotNull();
-            if(actual.isDefined()) {
+            if (actual.isDefined()) {
                 failWithMessage("Option expected to be empty but is defined");
             }
             return this;

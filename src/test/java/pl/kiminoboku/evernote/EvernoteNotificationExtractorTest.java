@@ -40,10 +40,10 @@ class EvernoteNotificationExtractorTest {
         String notebookGuid = "8f232448-1223-42fb-9448-096b39b51746";
         String reason = "create";
         Map<String, String> queryParameters = HashMap.of(
-                "userId", userId,
-                "guid", noteGuid,
-                "notebookGuid", notebookGuid,
-                "reason", reason)
+                        "userId", userId,
+                        "guid", noteGuid,
+                        "notebookGuid", notebookGuid,
+                        "reason", reason)
                 .toJavaMap();
         when(inputMock.getQueryStringParameters()).thenReturn(queryParameters);
         EvernoteNotification expectedNotification = EvernoteNotification.builder()
@@ -66,9 +66,9 @@ class EvernoteNotificationExtractorTest {
         String notebookGuid = "8f232448-1223-42fb-9448-096b39b51746";
         String reason = "create";
         Map<String, String> queryParameters = HashMap.of(
-                "userId", userId,
-                "notebookGuid", notebookGuid,
-                "reason", reason)
+                        "userId", userId,
+                        "notebookGuid", notebookGuid,
+                        "reason", reason)
                 .toJavaMap();
         when(inputMock.getQueryStringParameters()).thenReturn(queryParameters);
         EvernoteNotification expectedNotification = EvernoteNotification.builder()
@@ -90,9 +90,9 @@ class EvernoteNotificationExtractorTest {
         String notebookGuid = "8f232448-1223-42fb-9448-096b39b51746";
         String reason = "create";
         Map<String, String> queryParameters = HashMap.of(
-                "guid", noteGuid,
-                "notebookGuid", notebookGuid,
-                "reason", reason)
+                        "guid", noteGuid,
+                        "notebookGuid", notebookGuid,
+                        "reason", reason)
                 .toJavaMap();
         when(inputMock.getQueryStringParameters()).thenReturn(queryParameters);
 
@@ -107,9 +107,9 @@ class EvernoteNotificationExtractorTest {
         String noteGuid = "6420a4a7-a5d6-4630-b09d-bf8c392a5850";
         String reason = "create";
         Map<String, String> queryParameters = HashMap.of(
-                "userId", userId,
-                "guid", noteGuid,
-                "reason", reason)
+                        "userId", userId,
+                        "guid", noteGuid,
+                        "reason", reason)
                 .toJavaMap();
         when(inputMock.getQueryStringParameters()).thenReturn(queryParameters);
 
@@ -124,9 +124,9 @@ class EvernoteNotificationExtractorTest {
         String noteGuid = "6420a4a7-a5d6-4630-b09d-bf8c392a5850";
         String notebookGuid = "8f232448-1223-42fb-9448-096b39b51746";
         Map<String, String> queryParameters = HashMap.of(
-                "userId", userId,
-                "guid", noteGuid,
-                "notebookGuid", notebookGuid)
+                        "userId", userId,
+                        "guid", noteGuid,
+                        "notebookGuid", notebookGuid)
                 .toJavaMap();
         when(inputMock.getQueryStringParameters()).thenReturn(queryParameters);
 
